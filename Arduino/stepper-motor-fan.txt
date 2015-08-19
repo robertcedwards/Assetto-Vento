@@ -1,0 +1,32 @@
+#include <AccelStepper.h>
+AccelStepper stepper(1, 2, 3);
+const String keyRev = "1"; 
+int speed;
+String vRev = "0"; 
+int delimiter = 59; // means: ; 
+char data[80]; 
+
+void setup() {
+	Serial.begin(9600);
+	stepper.setMaxSpeed(1000);
+	stepper.setSpeed(100);
+	stepper.setAcceleration(500);
+}
+
+void loop()
+{
+	while (Serial.available() > 0) {
+
+		Serial.readBytesUntil(delimiter, data, 80);
+		String command = String(data);
+	    
+	    if (command.substring(0,1) == keyRev) {
+	        vRev = command.substring(2);
+	    }
+	    memset(data, '\0', 80);
+	} 
+
+    	speed = vRev.toInt() * 15;
+        stepper.moveTo(speed);
+        stepper.run();
+}
